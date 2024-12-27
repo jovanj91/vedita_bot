@@ -1,0 +1,9 @@
+# Query: my_bot
+
+2 results - 2 files
+
+package.xml:
+  4:   <name>vedita_bot</name>
+
+README.md:
+  5: It is recommended that you keep the repo/package name the same, but if you do change it, ensure you do a "Find all" using your IDE (or the built-in GitHub IDE by hitting the `.` key) and rename all instances of `my_bot` to whatever your project's name is.
