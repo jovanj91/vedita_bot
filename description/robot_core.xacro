@@ -18,7 +18,7 @@
     <xacro:property name="connector_height" value="0.055"/>
     <xacro:property name="connector_offset_z" value="-0.02"/>
     <xacro:property name="caster_wheel_offset_x" value="0.1"/>
-    <xacro:property name="caster_wheel_offset_z" value="${wheel_offset_z - wheel_radius + caster_wheel_radius + 0.01}"/>
+    <xacro:property name="caster_wheel_offset_z" value="${wheel_offset_z - wheel_radius + caster_wheel_radius + 0.0115}"/>
     
     <material name="white">
         <color rgba="1 1 1 1" />
