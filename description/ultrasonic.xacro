@@ -1,22 +1,23 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:property name="us_offset_x" value="${chassis_length/2 + 0.003}"/>
+    <xacro:property name="us_offset_y" value="0.1"/>
+    <xacro:property name="us_offset_z" value="${chassis_height/2}"/>
+    <xacro:property name="us_rotation_yaw" value="0.55"/> <!-- 3.14rad = 180 degrees, 0.1rad = 5.7degrees -->
 
-    <joint name="ultrasonic_sensor_joint" type="fixed">
+    <joint name="fr_mid_us_joint" type="fixed">
         <parent link="chassis"/>
-        <child link="ultrasonic_frame"/>
-        <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0"/>
+        <child link="fr_mid_us_frame"/>
+        <origin xyz="${us_offset_x} 0 ${us_offset_z}" rpy="0 0 0"/>
     </joint>
 
-    <link name="ultrasonic_frame">
-        <!-- Rectangular Base -->
+    <link name="fr_mid_us_frame">
         <visual>
             <geometry>
                 <box size="0.005 0.04 0.02"/>
             </geometry>
             <origin xyz="0 0 -0.0025" rpy="0 0 0"/>
         </visual>
-        
-
         <collision>
             <geometry>
                 <box size="0.005 0.04 0.02"/>
@@ -29,9 +30,9 @@
         </xacro:inertial_cylinder>
     </link>
 
-    <gazebo reference="ultrasonic_frame">
+    <gazebo reference="fr_mid_us_frame">
         <material>Gazebo/Red</material>
-        <sensor type="ray" name="range_sensor">
+        <sensor type="ray" name="fr_mid_range_sensor">
             <visualize>true</visualize>
             <pose> 0 0 0 0 0 0 </pose>
             <ray>
@@ -50,7 +51,7 @@
                     </vertical> -->
                 </scan>
                 <range>
-                    <min>0.10</min>
+                    <min>0.2</min>
                     <max>5.0</max>
                     <resolution>0.01</resolution>
                     
@@ -62,12 +63,201 @@
                 </noise>
             </ray>
             <update_rate>30</update_rate>
-            <plugin name="gazebo_ros_range_controller" filename="libgazebo_ros_ray_sensor.so">
+            <plugin name="fr_mid_us_controller" filename="libgazebo_ros_ray_sensor.so">
                 <ros>
-                    <remapping>~/out:=range</remapping>
+                    <remapping>~/out:=fr_mid_range</remapping>
                 </ros>
                 <output_type>sensor_msgs/Range</output_type>
-                <frame_name>ultrasonic_frame</frame_name>
+                <frame_name>fr_mid_us_frame</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <joint name="fr_left_us_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="fr_left_us_frame"/>
+        <origin xyz="${us_offset_x - 0.023} ${us_offset_y} ${us_offset_z}" rpy="0 0 ${us_rotation_yaw}"/>
+    </joint>
+
+    <link name="fr_left_us_frame">
+        <visual>
+            <geometry>
+                <box size="0.005 0.04 0.02"/>
+            </geometry>
+            <origin xyz="0 0 -0.0025" rpy="0 0 0"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.005 0.04 0.02"/>
+            </geometry>
+            <origin xyz="0 0 -0.0025" rpy="0 0 0"/>
+        </collision>
+
+        <xacro:inertial_cylinder mass="0.1" length="0.02" radius="0.01">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <gazebo reference="fr_left_us_frame">
+        <material>Gazebo/Red</material>
+        <sensor type="ray" name="fr_left_range_sensor">
+            <visualize>true</visualize>
+            <pose> 0 0 0 0 0 0 </pose>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>10</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.087</min_angle>
+                        <max_angle>0.087</max_angle>
+                    </horizontal>
+                    
+                </scan>
+                <range>
+                    <min>0.2</min>
+                    <max>5.0</max>
+                    <resolution>0.01</resolution>
+                    
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <update_rate>30</update_rate>
+            <plugin name="fr_left_us_controller" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <remapping>~/out:=fr_left_range</remapping>
+                </ros>
+                <output_type>sensor_msgs/Range</output_type>
+                <frame_name>fr_left_us_frame</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <joint name="fr_right_us_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="fr_right_us_frame"/>
+        <origin xyz="${us_offset_x - 0.023} ${-us_offset_y} ${us_offset_z}" rpy="0 0 ${-us_rotation_yaw}"/>
+    </joint>
+
+    <link name="fr_right_us_frame">
+        <visual>
+            <geometry>
+                <box size="0.005 0.04 0.02"/>
+            </geometry>
+            <origin xyz="0 0 -0.0025" rpy="0 0 0"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.005 0.04 0.02"/>
+            </geometry>
+            <origin xyz="0 0 -0.0025" rpy="0 0 0"/>
+        </collision>
+
+        <xacro:inertial_cylinder mass="0.1" length="0.02" radius="0.01">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <gazebo reference="fr_right_us_frame">
+        <material>Gazebo/Red</material>
+        <sensor type="ray" name="fr_right_range_sensor">
+            <visualize>true</visualize>
+            <pose> 0 0 0 0 0 0 </pose>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>10</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.087</min_angle>
+                        <max_angle>0.087</max_angle>
+                    </horizontal>
+                  
+                </scan>
+                <range>
+                    <min>0.2</min>
+                    <max>5.0</max>
+                    <resolution>0.01</resolution>
+                    
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <update_rate>30</update_rate>
+            <plugin name="fr_right_us_controller" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <remapping>~/out:=fr_right_range</remapping>
+                </ros>
+                <output_type>sensor_msgs/Range</output_type>
+                <frame_name>fr_right_us_frame</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <joint name="bc_mid_us_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="bc_mid_us_frame"/>
+        <origin xyz="${-us_offset_x} 0 ${us_offset_z}" rpy="0 0 3.14"/>
+    </joint>
+
+    <link name="bc_mid_us_frame">
+        <visual>
+            <geometry>
+                <box size="0.005 0.04 0.02"/>
+            </geometry>
+            <origin xyz="0 0 -0.0025" rpy="0 0 3.14"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.005 0.04 0.02"/>
+            </geometry>
+            <origin xyz="0 0 -0.0025" rpy="0 0 3.14"/>
+        </collision>
+
+        <xacro:inertial_cylinder mass="0.1" length="0.02" radius="0.01">
+            <origin xyz="0 0 0" rpy="0 0 3.14"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <gazebo reference="bc_mid_us_frame">
+        <material>Gazebo/Red</material>
+        <sensor type="ray" name="bc_mid_range_sensor">
+            <visualize>true</visualize>
+            <pose> 0 0 0 0 0 0 </pose>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>10</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.087</min_angle>
+                        <max_angle>0.087</max_angle>
+                    </horizontal>
+                    
+                </scan>
+                <range>
+                    <min>0.2</min>
+                    <max>5.0</max>
+                    <resolution>0.01</resolution>
+                    
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <update_rate>30</update_rate>
+            <plugin name="bc_mid_us_controller" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <remapping>~/out:=bc_mid_range</remapping>
+                </ros>
+                <output_type>sensor_msgs/Range</output_type>
+                <frame_name>bc_mid_us_frame</frame_name>
             </plugin>
         </sensor>
     </gazebo>

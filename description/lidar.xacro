@@ -1,10 +1,39 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+    
+    <joint name="lidar_connector_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="lidar_connector"/>
+        <origin xyz="0 0 0.7" rpy="0 0 0" />
+    </joint>
+
+    <link name="lidar_connector">
+        <visual>
+            <origin xyz="0 0 0"/>
+            <geometry>
+                <box size="0.05 0.05 1.0"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0"/>
+            <geometry>
+                <box size="0.05 0.05 1.0"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.001" x="0.05" y="0.05" z="1.0">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <gazebo reference="lidar_connector">
+        <material>Gazebo/Orange</material>
+    </gazebo>
 
     <joint name="laser_joint" type="fixed">
-        <parent link="chassis"/>
+        <parent link="lidar_connector"/>
         <child link="laser_frame"/>
-        <origin xyz="0 0 0.2" rpy="0 0 0"/>
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
         <!-- <origin xyz="0.1 0 0.175" rpy="0 0 0"/> -->
     </joint>
 
@@ -32,7 +61,7 @@
 
         <sensor name="laser" type="ray">
             <pose> 0 0 0 0 0 0 </pose>
-            <visualize>true</visualize>
+            <!-- <visualize>true</visualize> -->
             <update_rate>10</update_rate>
             <ray>
                 <scan>
