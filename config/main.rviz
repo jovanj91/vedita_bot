@@ -154,17 +154,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        fr_left_us_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         fr_mid_us_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        fr_right_us_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -225,11 +215,7 @@ Visualization Manager:
           Value: true
         chassis:
           Value: true
-        fr_left_us_frame:
-          Value: true
         fr_mid_us_frame:
-          Value: true
-        fr_right_us_frame:
           Value: true
         front_connector:
           Value: true
@@ -265,11 +251,7 @@ Visualization Manager:
                 camera_link:
                   camera_link_optical:
                     {}
-                fr_left_us_frame:
-                  {}
                 fr_mid_us_frame:
-                  {}
-                fr_right_us_frame:
                   {}
                 front_connector:
                   caster_front_wheel:
@@ -344,7 +326,7 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz_default_plugins/Range
       Color: 255; 255; 255
-      Enabled: true
+      Enabled: false
       Name: Range
       Topic:
         Depth: 5
@@ -353,12 +335,12 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /fr_left_range
-      Value: true
+      Value: false
     - Alpha: 0.5
       Buffer Length: 1
       Class: rviz_default_plugins/Range
       Color: 255; 255; 255
-      Enabled: true
+      Enabled: false
       Name: Range
       Topic:
         Depth: 5
@@ -367,7 +349,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /fr_right_range
-      Value: true
+      Value: false
     - Alpha: 0.5
       Buffer Length: 1
       Class: rviz_default_plugins/Range

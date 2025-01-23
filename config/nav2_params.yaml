@@ -253,17 +253,18 @@ local_costmap:
         plugin: "nav2_costmap_2d::RangeSensorLayer"
         enabled: True
         transform_tolerance: 0.3
+        clear_on_max_reading: true
         topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
         clear_threshold: 0.2
         mark_threshold: 0.8
-        phi: 1.2
+        no_readings_timeout: 5.0
+        clear_after_reading: true
         max_distance: 5.0
-        min_distance: 0.5
-        inflate_cone: 1.0
-        no_readings_timeout: 0.0
-        clear_on_max_reading: True
+        min_distance: 0.2
+        clear_on_max_reading: true
+        buffer_size: 10
         observation_persistence: 2.0
-        input_sensor_type: ALL
+        inf_is_valid: false
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -298,18 +299,19 @@ global_costmap:
       range_sensor_layer:
         plugin: "nav2_costmap_2d::RangeSensorLayer"
         enabled: True
-        transform_tolerance: 0.7
+        transform_tolerance: 0.3
+        clear_on_max_reading: true
         topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
         clear_threshold: 0.2
         mark_threshold: 0.8
-        phi: 1.2
+        no_readings_timeout: 5.0
+        clear_after_reading: true
         max_distance: 5.0
-        min_distance: 1.0
-        inflate_cone: 1.0
-        no_readings_timeout: 0.0
-        clear_on_max_reading: True
+        min_distance: 0.2
+        clear_on_max_reading: true
+        buffer_size: 10
         observation_persistence: 2.0
-        input_sensor_type: ALL
+        inf_is_valid: false
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
