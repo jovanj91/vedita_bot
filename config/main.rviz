@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /LaserScan1
         - /TF1
         - /Camera1
         - /Camera1/Topic1
@@ -90,7 +91,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /scan
+        Value: /scan/fused
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -154,7 +155,17 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        fr_left_us_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         fr_mid_us_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr_right_us_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -215,7 +226,11 @@ Visualization Manager:
           Value: true
         chassis:
           Value: true
+        fr_left_us_frame:
+          Value: true
         fr_mid_us_frame:
+          Value: true
+        fr_right_us_frame:
           Value: true
         front_connector:
           Value: true
@@ -224,8 +239,6 @@ Visualization Manager:
         left_wheel:
           Value: true
         lidar_connector:
-          Value: true
-        map:
           Value: true
         odom:
           Value: true
@@ -237,32 +250,35 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_link:
-              base_footprint:
-                {}
-              chassis:
-                back_connector:
-                  caster_back_wheel:
-                    {}
-                bc_mid_us_frame:
+        odom:
+          base_link:
+            base_footprint:
+              {}
+            chassis:
+              back_connector:
+                caster_back_wheel:
                   {}
-                camera_link:
-                  camera_link_optical:
-                    {}
-                fr_mid_us_frame:
+              bc_mid_us_frame:
+                {}
+              camera_link:
+                camera_link_optical:
                   {}
-                front_connector:
-                  caster_front_wheel:
-                    {}
-                lidar_connector:
-                  laser_frame:
-                    {}
-              left_wheel:
+              fr_left_us_frame:
                 {}
-              right_wheel:
+              fr_mid_us_frame:
                 {}
+              fr_right_us_frame:
+                {}
+              front_connector:
+                caster_front_wheel:
+                  {}
+              lidar_connector:
+                laser_frame:
+                  {}
+            left_wheel:
+              {}
+            right_wheel:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -326,7 +342,7 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz_default_plugins/Range
       Color: 255; 255; 255
-      Enabled: false
+      Enabled: true
       Name: Range
       Topic:
         Depth: 5
@@ -335,12 +351,12 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /fr_left_range
-      Value: false
+      Value: true
     - Alpha: 0.5
       Buffer Length: 1
       Class: rviz_default_plugins/Range
       Color: 255; 255; 255
-      Enabled: false
+      Enabled: true
       Name: Range
       Topic:
         Depth: 5
@@ -349,7 +365,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /fr_right_range
-      Value: false
+      Value: true
     - Alpha: 0.5
       Buffer Length: 1
       Class: rviz_default_plugins/Range
@@ -409,7 +425,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: map
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -462,11 +478,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 56.19156265258789
+      Scale: 35.88335418701172
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 0.9277726411819458
-      Y: 2.428445816040039
+      X: -3.1591455936431885
+      Y: -1.1005501747131348
     Saved: ~
 Window Geometry:
   Camera:
@@ -478,7 +494,7 @@ Window Geometry:
   Hide Right Dock: false
   Navigation 2:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000015600000222fc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000000e3000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000001b0000000af0000002800fffffffb0000000c00430061006d00650072006101000001b0000000af0000000000000000fb00000018004e0061007600690067006100740069006f006e002000320100000126000001390000012600ffffff000000010000010f00000222fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d00000222000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005560000003efc0100000002fb0000000800540069006d0065010000000000000556000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000002e50000022200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000015600000222fc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000000e3000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000001b0000000af0000002800fffffffb0000000c00430061006d00650072006101000001b0000000af0000000000000000fb00000018004e0061007600690067006100740069006f006e002000320100000126000001390000013900ffffff000000010000010f00000222fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d00000222000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005560000003efc0100000002fb0000000800540069006d0065010000000000000556000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000002e50000022200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:

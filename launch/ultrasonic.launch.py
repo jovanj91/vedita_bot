@@ -5,10 +5,10 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='rp_ultrasonic_sensor',
-            executable='serial_node',
+            executable='serial_publisher',
             output='screen',
             parameters=[{
-                'serial_port': '/dev/serial/by-id/usb-Arduino_Nano-if00-port0',
+                'serial_port': '/dev/ttyUSB0',
                 'baud_rate': 115200
             }]
         )
