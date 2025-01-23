@@ -6,10 +6,6 @@ def generate_launch_description():
         Node(
             package='rp_ultrasonic_sensor',
             executable='sensor_fusion',
-            parameters=[
-                {'laser_topic': '/scan'},
-                {'ultrasonic_topics': ['/fr_mid_range', '/fr_left_range', '/fr_right_range', '/bc_mid_range']},
-                {'output_topic': '/scan_fused'}
-            ]
+            name='sensor_fusion_node',
         )
     ])

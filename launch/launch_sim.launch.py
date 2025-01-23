@@ -84,7 +84,12 @@ def generate_launch_description():
     #
     # Replace the diff_drive_spawner in the final return with delayed_diff_drive_spawner
 
-
+    
+    fusing_sensor = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),'launch','fusing_sensor.launch.py'
+                )])
+    )
 
     # Launch them all!
     return LaunchDescription([
@@ -94,5 +99,6 @@ def generate_launch_description():
         joystick,
         twist_mux,
         diff_drive_spawner,
-        joint_broad_spawner
+        joint_broad_spawner,
+        fusing_sensor
     ])
