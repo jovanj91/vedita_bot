@@ -7,7 +7,8 @@ from launch import LaunchDescription
 
 from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessStart
 from launch_ros.actions import Node
 
 
@@ -81,12 +82,8 @@ def generate_launch_description():
     )
     
     delayed_mapper = TimerAction(period=5.0, actions=[mapper])
-    # navigation = IncludeLaunchDescription(
-    #             PythonLaunchDescriptionSource([os.path.join(
-    #                 get_package_share_directory(package_name),'launch','navigation_launch.py'
-    #             )]), launch_arguments={'use_sim_time': 'true'}.items()
-    # )
 
+    
     # Launch them all!
     return LaunchDescription([
         rsp,
@@ -97,6 +94,5 @@ def generate_launch_description():
         diff_drive_spawner,
         joint_broad_spawner,
         # fusing_sensor,
-        delayed_mapper,
-        # navigation,
+        delayed_mapper
     ])
