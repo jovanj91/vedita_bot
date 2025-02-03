@@ -9,16 +9,16 @@ teleop_node:
         axis_linear:  # Left thumb stick vertical
             x: 1
         scale_linear:
-            x: 1.0 #0.7
+            x: 0.5 #0.7
         scale_linear_turbo:
-            x: 2.0 #1.5
+            x: 1.0 #1.5
 
         axis_angular:  # Left thumb stick horizontal
             yaw: 0
         scale_angular:
-            yaw: 2.5 # 0.4
+            yaw: 0.5 # 0.4
         scale_angular_turbo:
-            x: 3.0 #1.5
+            yaw: 1.0 #1.5
 
         enable_button: 7  # Left trigger button
         enable_turbo_button: 9  # Right trigger button
