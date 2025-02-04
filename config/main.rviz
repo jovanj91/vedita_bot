@@ -12,7 +12,9 @@ Panels:
         - /Range1/Topic1
         - /Map3/Topic1
         - /Polygon1
+        - /Polygon1/Topic1
         - /Polygon2
+        - /Polygon2/Topic1
       Splitter Ratio: 0.5
     Tree Height: 166
   - Class: rviz_common/Selection
@@ -314,10 +316,11 @@ Visualization Manager:
         Value: /camera/image_raw
       Value: false
       Visibility:
-        "": true
         Grid: true
         LaserScan: true
         Map: true
+        Path: true
+        Polygon: true
         Range: true
         RobotModel: true
         TF: true
@@ -484,7 +487,7 @@ Visualization Manager:
       Name: Polygon
       Topic:
         Depth: 5
-        Durability Policy: Volatile
+        Durability Policy: Transient Local
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
@@ -497,7 +500,7 @@ Visualization Manager:
       Name: Polygon
       Topic:
         Depth: 5
-        Durability Policy: Volatile
+        Durability Policy: Transient Local
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
@@ -559,7 +562,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 103.2322769165039
+      Scale: 100.3056411743164
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
       X: 0.27418768405914307
