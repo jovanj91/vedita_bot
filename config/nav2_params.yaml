@@ -535,20 +535,20 @@ collision_monitor:
     # to be ignored in circular case.
     polygons: ["PolygonStop", "PolygonSlow", "FootprintApproach"]
     PolygonStop:
-      # type: "polygon"
-      # points: [0.3, 0.3, 0.3, -0.3, 0.0, -0.3, 0.0, 0.3]
-      type: "circle"
-      radius: 0.33
+      type: "polygon"
+      points: [0.4, 0.4, 0.4, -0.4, 0.0, -0.4, 0.0, 0.4]
+      # type: "circle"
+      # radius: 0.33
       action_type: "stop"
       max_points: 3
       visualize: True
       polygon_pub_topic: "polygon_stop"
       enabled: True
     PolygonSlow:
-      # type: "polygon"
-      # points: [0.4, 0.4, 0.4, -0.4, -0.4, -0.4, -0.4, 0.4]
-      type: "circle"
-      radius: 0.55
+      type: "polygon"
+      points: [0.6, 0.6, 0.6, -0.6, -0.6, -0.6, -0.6, 0.6]
+      # type: "circle"
+      # radius: 0.55
       action_type: "slowdown"
       max_points: 3
       slowdown_ratio: 0.3
@@ -562,7 +562,7 @@ collision_monitor:
       time_before_collision: 1.2
       simulation_time_step: 0.1
       max_points: 5
-      visualize: False
+      visualize: True
       enabled: True
     observation_sources: ["scan", "fr_mid_range", "fr_left_range", "fr_right_range", "bc_mid_range"]
     scan:
