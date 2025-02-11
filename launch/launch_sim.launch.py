@@ -75,14 +75,12 @@ def generate_launch_description():
     #             )])
     # )
 
-    mapper = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory(package_name),'launch','online_async_launch.py'
-                )]), launch_arguments={'use_sim_time': 'true'}.items()
-    )
-    
-    delayed_mapper = TimerAction(period=5.0, actions=[mapper])
-
+    # mapper = IncludeLaunchDescription(
+    #             PythonLaunchDescriptionSource([os.path.join(
+    #                 get_package_share_directory(package_name),'launch','online_async_launch.py'
+    #             )]), launch_arguments={'use_sim_time': 'true'}.items()
+    # )
+    # delayed_mapper = TimerAction(period=5.0, actions=[mapper])
     
     # Launch them all!
     return LaunchDescription([
@@ -94,5 +92,5 @@ def generate_launch_description():
         diff_drive_spawner,
         joint_broad_spawner,
         # fusing_sensor,
-        delayed_mapper
+        # delayed_mapper
     ])
