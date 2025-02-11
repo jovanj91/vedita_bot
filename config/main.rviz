@@ -34,7 +34,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
   - Class: nav2_rviz_plugins/Navigation 2
     Name: Navigation 2
 Visualization Manager:
@@ -237,8 +237,6 @@ Visualization Manager:
           Value: true
         lidar_connector:
           Value: true
-        map:
-          Value: true
         odom:
           Value: true
         right_wheel:
@@ -249,36 +247,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_link:
-              base_footprint:
-                {}
-              chassis:
-                back_connector:
-                  caster_back_wheel:
-                    {}
-                bc_mid_us_frame:
-                  {}
-                camera_link:
-                  camera_link_optical:
-                    {}
-                fr_left_us_frame:
-                  {}
-                fr_mid_us_frame:
-                  {}
-                fr_right_us_frame:
-                  {}
-                front_connector:
-                  caster_front_wheel:
-                    {}
-                lidar_connector:
-                  laser_frame:
-                    {}
-              left_wheel:
-                {}
-              right_wheel:
-                {}
+        {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
