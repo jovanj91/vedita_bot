@@ -102,7 +102,19 @@ def generate_launch_description():
     #
     # Replace the diff_drive_spawner in the final return with delayed_diff_drive_spawner
 
+    rplidar_launch = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),'launch','rplidar.launch.py'
+                )])
+    )
+    delayed_rplidar_launch = TimerAction(period=5.0, actions=[rplidar_launch])    
 
+    us_launch = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),'launch','ultrasonic.launch.py'
+                )])
+    )
+    delayed_us_launch = TimerAction(period=8.0, actions=[us_launch])  
 
     # Launch them all!
     return LaunchDescription([
@@ -111,5 +123,7 @@ def generate_launch_description():
         twist_mux,
         delayed_controller_manager,
         delayed_diff_drive_spawner,
-        delayed_joint_broad_spawner
+        delayed_joint_broad_spawner,
+        delayed_rplidar_launch,
+        delayed_us_launch
     ])
