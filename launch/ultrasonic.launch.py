@@ -4,7 +4,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         Node(
-            package='rp_ultrasonic_sensor',
+            package='vedita_bot_addon',
             executable='serial_publisher',
             output='screen',
             parameters=[{
