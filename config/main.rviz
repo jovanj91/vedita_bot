@@ -7,6 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /LaserScan1
+        - /LaserScan1/Topic1
         - /Camera1
         - /Camera1/Topic1
         - /Range1/Topic1
@@ -34,7 +35,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
   - Class: nav2_rviz_plugins/Navigation 2
     Name: Navigation 2
 Visualization Manager:
@@ -84,10 +85,10 @@ Visualization Manager:
       Style: Flat Squares
       Topic:
         Depth: 5
-        Durability Policy: Volatile
+        Durability Policy: System Default
         Filter size: 10
         History Policy: Keep Last
-        Reliability Policy: Reliable
+        Reliability Policy: Best Effort
         Value: /scan
       Use Fixed Frame: true
       Use rainbow: true
@@ -247,7 +248,35 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        odom:
+          base_link:
+            base_footprint:
+              {}
+            chassis:
+              back_connector:
+                caster_back_wheel:
+                  {}
+              bc_mid_us_frame:
+                {}
+              camera_link:
+                camera_link_optical:
+                  {}
+              fr_left_us_frame:
+                {}
+              fr_mid_us_frame:
+                {}
+              fr_right_us_frame:
+                {}
+              front_connector:
+                caster_front_wheel:
+                  {}
+              lidar_connector:
+                laser_frame:
+                  {}
+            left_wheel:
+              {}
+            right_wheel:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -531,7 +560,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 100.3056411743164
+      Scale: 25.66158103942871
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
       X: 0.27418768405914307
