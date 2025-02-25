@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QTextEdit, QLineEdit, QHBoxLayout, QCheckBox
 )
 from PyQt6.QtCore import QThread, pyqtSignal
-import paramiko
+import paramiko, atexit
 
 
 class ROS2Launcher(QWidget):
@@ -27,9 +27,7 @@ class ROS2Launcher(QWidget):
         # Use Sim Time checkbox (set default to checked)
         self.sim_time_checkbox = QCheckBox("Use Sim Time")
         self.sim_time_checkbox.setChecked(True)
-        self.sim_time_checkbox.stateChanged.connect(self.toggle_world_input)
-        self.sim_time_checkbox.stateChanged.connect(self.toggle_real_robot)
-        self.sim_time_checkbox.stateChanged.connect(self.toggle_joystick_button)
+        self.sim_time_checkbox.stateChanged.connect(self.toggle_use_sim_time)
         layout.addWidget(self.sim_time_checkbox)
 
         # World file input (hidden if use_sim_time is False)
@@ -95,7 +93,6 @@ class ROS2Launcher(QWidget):
         
         self.launch_joystick_button = QPushButton("Launch Joystick Control")
         self.launch_joystick_button.clicked.connect(self.launch_joystick)
-        self.launch_joystick_button.setDisabled(True)  # Initially disabled
         self.launch_joystick_button.setVisible(False)  # Initially hidden
         layout.addWidget(self.launch_joystick_button)
 
@@ -117,22 +114,16 @@ class ROS2Launcher(QWidget):
         self.robot_process = None
         self.log_thread = None
 
-    def toggle_world_input(self):
+    def toggle_use_sim_time(self):
         is_checked = self.sim_time_checkbox.isChecked()
         self.world_label.setVisible(is_checked)
         self.world_input.setVisible(is_checked)
-    
-    def toggle_real_robot(self):
-        is_checked = self.sim_time_checkbox.isChecked()
-        self.launch_robot_button.setVisible(not is_checked)
-        self.stop_robot_button.setVisible(not is_checked)
+        self.launch_localization_button.setDisabled(is_checked)
         self.launch_sim_button.setVisible(is_checked)
         self.stop_sim_button.setVisible(is_checked)
-
-    def toggle_joystick_button(self):
-        is_checked = self.sim_time_checkbox.isChecked()
         self.launch_joystick_button.setVisible(not is_checked)
         self.stop_joystick_button.setVisible(not is_checked)
+    
 
     def get_use_sim_time(self):
         return "true" if self.sim_time_checkbox.isChecked() else "false"
@@ -180,6 +171,7 @@ class ROS2Launcher(QWidget):
 
         # Disable stop button, disable next steps
         self.stop_localization_button.setDisabled(True)
+        self.launch_localization_button.setDisabled(False)
         self.launch_navigation_button.setDisabled(True)
 
     def launch_navigation(self):
@@ -329,8 +321,10 @@ class ROS2Launcher(QWidget):
         self.stop_navigation()
         self.stop_localization()
         self.stop_sim()
-        self.stop_robot()
+        self.stop_joystick()
+        #self.stop_robot()
         event.accept()  # Allow window to close
+
 
 
 class LogReader(QThread):
@@ -365,9 +359,22 @@ class SSHLogReader(QThread):
             if self.channel.exit_status_ready():
                 break
 
+def cleanup():
+    """Ensure all ROS 2 processes are stopped before exiting."""
+    if window.sim_process is not None:
+        window.stop_ros_process(window.sim_process, "Simulation stopped.")
+    if window.localization_process is not None:
+        window.stop_ros_process(window.localization_process, "Localization stopped.")
+    if window.navigation_process is not None:
+        window.stop_ros_process(window.navigation_process, "Navigation stopped.")
+    if window.joystick_process is not None:
+        window.stop_ros_process(window.joystick_process, "Joystick stopped.")
+    if window.robot_process is not None:
+        window.stop_robot()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ROS2Launcher()
     window.show()
+    atexit.register(cleanup)
     sys.exit(app.exec())
