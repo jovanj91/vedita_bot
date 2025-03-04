@@ -13,7 +13,8 @@ def generate_launch_description():
             parameters=[{
                 'image_size': [640,480],
                 #'time_per_frame': [1, 6],
-                'camera_frame_id': 'camera_link_optical'
+                'camera_frame_id': 'camera_link_optical',
+                'output_encoding': 'yuv422_yuy2'
             }]
         )
     ])
