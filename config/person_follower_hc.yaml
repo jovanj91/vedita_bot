@@ -1,0 +1,10 @@
+# Config file (config/params.yaml)
+person_follower:
+  ros__parameters:
+    cascade_path: "$(find-package-share vedita_bot)/config/haarcascade_frontalface_default.xml"
+    scale_factor: 1.1
+    min_neighbors: 5
+    min_size: [40, 40]
+    linear_speed: 0.2
+    angular_gain: 0.005
+    detection_threshold: 150

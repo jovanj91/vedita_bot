@@ -367,7 +367,7 @@ local_costmap:
       range_sensor_layer:
         plugin: "nav2_costmap_2d::RangeSensorLayer"
         enabled: True
-        clear_on_max_reading: False
+        clear_on_max_reading: True
         topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
         clear_threshold: 0.2
         mark_threshold: 0.8
@@ -411,7 +411,7 @@ global_costmap:
       range_sensor_layer:
         plugin: "nav2_costmap_2d::RangeSensorLayer"
         enabled: True
-        clear_on_max_reading: False
+        clear_on_max_reading: True
         topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
         clear_threshold: 0.2
         mark_threshold: 0.8
