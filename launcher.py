@@ -2,6 +2,7 @@ import sys
 import subprocess
 import os
 import signal
+from dotenv import load_dotenv
 import re
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QTextEdit, QLineEdit, QHBoxLayout, QCheckBox
@@ -63,7 +64,7 @@ class ROS2Launcher(QWidget):
         # Map file input
         map_layout = QHBoxLayout()
         map_layout.addWidget(QLabel("Map File:"))
-        self.map_input = QLineEdit("./src/vedita_bot/maps/test.yaml")
+        self.map_input = QLineEdit("./src/vedita_bot/maps/lantai8baru.yaml")
         map_layout.addWidget(self.map_input)
         layout.addLayout(map_layout)
 
@@ -102,14 +103,31 @@ class ROS2Launcher(QWidget):
         self.stop_joystick_button.setVisible(False)  # Initially hidden
         layout.addWidget(self.stop_joystick_button)
 
+        self.activate_camera_button = QPushButton("Activate Camera")
+        self.activate_camera_button.clicked.connect(self.launch_camera)
+        self.activate_camera_button.setVisible(False)  # Initially hidden
+        layout.addWidget(self.activate_camera_button)
+
+        self.deactivate_camera_button = QPushButton("Deactivate Camera")
+        self.deactivate_camera_button.clicked.connect(self.stop_camera)
+        self.deactivate_camera_button.setDisabled(True)  # Initially disabled
+        self.deactivate_camera_button.setVisible(False)  # Initially hidden
+        layout.addWidget(self.deactivate_camera_button)
+
 
         self.setLayout(layout)
-
+        load_dotenv()
         # Store ROS processes
         self.sim_process = None
         self.localization_process = None
         self.navigation_process = None
         self.joystick_process = None
+        self.camera_process = None
+
+        self.raspi_ip=os.getenv("RASPI_IP")
+        self.raspi_username=os.getenv("RASPI_USERNAME")
+        self.raspi_password=os.getenv("RASPI_PASSWORD")
+
         self.ssh_client = None
         self.robot_process = None
         self.log_thread = None
@@ -123,7 +141,8 @@ class ROS2Launcher(QWidget):
         self.stop_sim_button.setVisible(is_checked)
         self.launch_joystick_button.setVisible(not is_checked)
         self.stop_joystick_button.setVisible(not is_checked)
-    
+        self.activate_camera_button.setVisible(not is_checked)
+        self.deactivate_camera_button.setVisible(not is_checked)
 
     def get_use_sim_time(self):
         return "true" if self.sim_time_checkbox.isChecked() else "false"
@@ -211,13 +230,31 @@ class ROS2Launcher(QWidget):
         self.stop_joystick_button.setDisabled(True)
         self.launch_joystick_button.setDisabled(False)
 
+    def launch_camera(self):
+        if self.camera_process is None:
+            command = f"ros2 launch vedita_bot camera.launch.py"
+            self.camera_process = self.start_ros_process(command)
+            self.status_label.setText("Camera activated...")
+
+            # Disable launch button, enable stop button
+            self.activate_camera_button.setDisabled(True)
+            self.deactivate_camera_button.setDisabled(False)
+
+    def stop_camera(self):
+        self.stop_ros_process(self.camera_process, "Camera deactivated.")
+        self.camera_process= None
+
+        # Disable stop button, enable previous step stop button
+        self.deactivate_camera_button.setDisabled(True)
+        self.activate_camera_button.setDisabled(False)
+
     def launch_robot(self):
         if self.robot_process is None:
             self.ssh_client = paramiko.SSHClient()
             self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
                 # Connect to the Raspberry Pi
-                self.ssh_client.connect('10.87.17.83', username='pivedita', password='Raspi1234#')
+                self.ssh_client.connect(self.raspi_ip, username=self.raspi_username, password=self.raspi_password)
 
                 # Command to launch the robot
                 command = "ros2 launch vedita_bot launch_robot.launch.py"
@@ -322,6 +359,7 @@ class ROS2Launcher(QWidget):
         self.stop_localization()
         self.stop_sim()
         self.stop_joystick()
+        self.stop_camera()
         #self.stop_robot()
         event.accept()  # Allow window to close
 
@@ -369,6 +407,8 @@ def cleanup():
         window.stop_ros_process(window.navigation_process, "Navigation stopped.")
     if window.joystick_process is not None:
         window.stop_ros_process(window.joystick_process, "Joystick stopped.")
+    if window.joystick_process is not None:
+        window.stop_ros_process(window.camera_process, "Camera stopped.")
     if window.robot_process is not None:
         window.stop_robot()
 
