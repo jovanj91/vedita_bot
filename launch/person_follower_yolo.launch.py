@@ -13,6 +13,11 @@ def generate_launch_description():
             name='person_follower_yolo',
             output='screen',
             namespace='person_follower_yolo',
-            parameters=[{os.path.join(package_dir, 'config', 'person_follower_hc.yaml')}],
+            parameters=[{
+                'model_path': f"{os.path.join(package_dir, 'models', 'yolo11n.pt')}",
+                'min_distance': 100.0 , #min threshold detected_person width
+                'max_distance': 300.0, #max threshold detected_person width
+                'image_width': 640.0,
+            }],
         )
     ])

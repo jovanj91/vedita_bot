@@ -13,6 +13,14 @@ def generate_launch_description():
             name='person_follower_hc',
             output='screen',
             namespace='person_follower_hc',
-            parameters=[f"{os.path.join(package_dir, 'config', 'person_follower_hc.yaml')}"],
+            parameters=[{
+                'cascade_path': f"{os.path.join(package_dir, 'models', 'haarcascade_fullbody.xml')}",
+                'scale_factor': 1.1,
+                'min_neighbors': 5,
+                'min_size': [40, 40],
+                'linear_speed': 0.2,
+                'angular_gain': 0.005,
+                'detection_threshold': 150
+            }],
         )
     ])
