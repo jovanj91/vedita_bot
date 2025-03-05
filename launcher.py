@@ -17,7 +17,7 @@ class ROS2Launcher(QWidget):
 
         self.ros_ws_path = os.path.expanduser("~/ros2_ws")
 
-        self.setWindowTitle("ROS 2 Launcher")
+        self.setWindowTitle("Vedita Launcher")
         self.setGeometry(100, 100, 700, 600)
 
         layout = QVBoxLayout()
@@ -26,7 +26,7 @@ class ROS2Launcher(QWidget):
         layout.addWidget(self.status_label)
 
         # Use Sim Time checkbox (set default to checked)
-        self.sim_time_checkbox = QCheckBox("Use Sim Time")
+        self.sim_time_checkbox = QCheckBox("Running in simulation mode")
         self.sim_time_checkbox.setChecked(True)
         self.sim_time_checkbox.stateChanged.connect(self.toggle_use_sim_time)
         layout.addWidget(self.sim_time_checkbox)
@@ -88,6 +88,18 @@ class ROS2Launcher(QWidget):
         self.stop_navigation_button.setDisabled(True)  # Initially disabled
         layout.addWidget(self.stop_navigation_button)
 
+        self.launch_person_follow_button = QPushButton("Launch Person Follower")
+        self.launch_person_follow_button.clicked.connect(self.launch_person_follower)
+        self.launch_person_follow_button.setDisabled(True)  # Initially disabled
+        self.launch_person_follow_button.setVisible(False)
+        layout.addWidget(self.launch_person_follow_button)
+
+        self.stop_person_follow_button = QPushButton("Stop Person Follower")
+        self.stop_person_follow_button.clicked.connect(self.stop_person_follower)
+        self.stop_person_follow_button.setDisabled(True)  # Initially disabled
+        self.stop_person_follow_button.setVisible(False)
+        layout.addWidget(self.stop_person_follow_button)
+
         self.log_output = QTextEdit()
         self.log_output.setReadOnly(True)
         layout.addWidget(self.log_output)
@@ -123,6 +135,7 @@ class ROS2Launcher(QWidget):
         self.navigation_process = None
         self.joystick_process = None
         self.camera_process = None
+        self.person_follower_process = None
 
         self.raspi_ip=os.getenv("RASPI_IP")
         self.raspi_username=os.getenv("RASPI_USERNAME")
@@ -143,6 +156,8 @@ class ROS2Launcher(QWidget):
         self.stop_joystick_button.setVisible(not is_checked)
         self.activate_camera_button.setVisible(not is_checked)
         self.deactivate_camera_button.setVisible(not is_checked)
+        self.launch_person_follow_button.setVisible(not is_checked)
+        self.stop_person_follow_button.setVisible(not is_checked)
 
     def get_use_sim_time(self):
         return "true" if self.sim_time_checkbox.isChecked() else "false"
@@ -239,6 +254,8 @@ class ROS2Launcher(QWidget):
             # Disable launch button, enable stop button
             self.activate_camera_button.setDisabled(True)
             self.deactivate_camera_button.setDisabled(False)
+            self.launch_person_follow_button.setDisabled(False)
+
 
     def stop_camera(self):
         self.stop_ros_process(self.camera_process, "Camera deactivated.")
@@ -247,6 +264,27 @@ class ROS2Launcher(QWidget):
         # Disable stop button, enable previous step stop button
         self.deactivate_camera_button.setDisabled(True)
         self.activate_camera_button.setDisabled(False)
+        self.launch_person_follow_button.setDisabled(True)
+
+    def launch_person_follower(self):
+        if self.person_follower_process is None:
+            command = f"ros2 launch vedita_bot person_follower_yolo.launch.py"
+            self.person_follower_process = self.start_ros_process(command)
+            self.status_label.setText("Person Follower Running..")
+
+            # Disable launch button, enable stop button
+            self.launch_person_follow_button.setDisabled(True)
+            self.stop_person_follow_button.setDisabled(False)
+            self.deactivate_camera_button.setDisabled(True)
+
+    def stop_person_follower(self):
+        self.stop_ros_process(self.person_follower_process, "Person Follower stopped.")
+        self.person_follower_process = None
+
+        # Disable stop button, enable previous step stop button
+        self.stop_person_follow_button.setDisabled(True)
+        self.launch_person_follow_button.setDisabled(False)
+        self.deactivate_camera_button.setDisabled(False)
 
     def launch_robot(self):
         if self.robot_process is None:
@@ -360,6 +398,7 @@ class ROS2Launcher(QWidget):
         self.stop_sim()
         self.stop_joystick()
         self.stop_camera()
+        self.stop_person_follower()
         #self.stop_robot()
         event.accept()  # Allow window to close
 
@@ -407,8 +446,10 @@ def cleanup():
         window.stop_ros_process(window.navigation_process, "Navigation stopped.")
     if window.joystick_process is not None:
         window.stop_ros_process(window.joystick_process, "Joystick stopped.")
-    if window.joystick_process is not None:
+    if window.camera_process is not None:
         window.stop_ros_process(window.camera_process, "Camera stopped.")
+    if window.person_follower_process is not None:
+        window.stop_ros_process(window.person_follower_process, "Person Follower stopped.")
     if window.robot_process is not None:
         window.stop_robot()
 
