@@ -26,6 +26,11 @@ def generate_launch_description():
         description='Whether to launch the Ultrasonic node'
     )
     
+    declare_use_camera_arg = DeclareLaunchArgument(
+        'use_camera',
+        default_value='true',
+        description='Whether to launch the Camera node'
+    )
 
     # Define a function to conditionally add launch actions
     def conditional_launch_actions(context, *args, **kwargs):
@@ -48,6 +53,15 @@ def generate_launch_description():
             )
             delayed_us_launch = TimerAction(period=8.0, actions=[us_launch])
             launch_actions.append(delayed_us_launch)
+
+        if context.launch_configurations['use_camera'] == 'true':
+            camera_launch = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name), 'launch', 'camera.launch.py'
+                )])
+            )
+            delayed_camera_launch = TimerAction(period=8.0, actions=[camera_launch])
+            launch_actions.append(delayed_camera_launch)
 
         return launch_actions
 
@@ -120,6 +134,7 @@ def generate_launch_description():
     return LaunchDescription([
         declare_use_rplidar_arg,
         declare_use_ultrasonic_arg,
+        declare_use_camera_arg,
         rsp,
         joystick,
         twist_mux,

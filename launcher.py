@@ -4,6 +4,7 @@ import os
 import signal
 from dotenv import load_dotenv
 import re
+import pymysql
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QTextEdit, QLineEdit, QHBoxLayout, QCheckBox
 )
@@ -14,6 +15,32 @@ import paramiko, atexit
 class ROS2Launcher(QWidget):
     def __init__(self):
         super().__init__()
+
+        load_dotenv()
+        # Store ROS processes
+        self.sim_process = None
+        self.localization_process = None
+        self.navigation_process = None
+        self.joystick_process = None
+        self.camera_ws_process = None
+        self.person_follower_process = None
+        self.move_point_A_process = None
+        self.move_point_B_process = None
+        self.move_point_C_process = None
+
+        self.DB_HOST=os.getenv("DB_HOST")
+        self.DB_PORT=os.getenv("DB_PORT")
+        self.DB_USER=os.getenv("DB_USER")
+        self.DB_PASSWORD=os.getenv("DB_PASSWORD")
+        self.DB_NAME=os.getenv("DB_NAME")
+
+        self.raspi_ip=os.getenv("RASPI_IP")
+        self.raspi_username=os.getenv("RASPI_USERNAME")
+        self.raspi_password=os.getenv("RASPI_PASSWORD")
+
+        self.ssh_client = None
+        self.robot_process = None
+        self.log_thread = None
 
         self.ros_ws_path = os.path.expanduser("~/ros2_ws")
 
@@ -46,22 +73,20 @@ class ROS2Launcher(QWidget):
 
         self.stop_sim_button = QPushButton("Stop Simulation")
         self.stop_sim_button.clicked.connect(self.stop_sim)
-        self.stop_sim_button.setDisabled(True)  # Initially disabled
+        self.stop_sim_button.setDisabled(True) 
         layout.addWidget(self.stop_sim_button)
 
-        # SSH Buttons
         self.launch_robot_button = QPushButton("Launch Robot")
         self.launch_robot_button.clicked.connect(self.launch_robot)
-        self.launch_robot_button.setVisible(False)  # Initially hidden
+        self.launch_robot_button.setVisible(False) 
         layout.addWidget(self.launch_robot_button)
 
         self.stop_robot_button = QPushButton("Stop Robot")
         self.stop_robot_button.clicked.connect(self.stop_robot)
-        self.stop_robot_button.setDisabled(True)  # Initially disabled
-        self.stop_robot_button.setVisible(False)  # Initially hidden
+        self.stop_robot_button.setDisabled(True)  
+        self.stop_robot_button.setVisible(False)  
         layout.addWidget(self.stop_robot_button)
 
-        # Map file input
         map_layout = QHBoxLayout()
         map_layout.addWidget(QLabel("Map File:"))
         self.map_input = QLineEdit("./src/vedita_bot/maps/lantai8baru.yaml")
@@ -115,35 +140,97 @@ class ROS2Launcher(QWidget):
         self.stop_joystick_button.setVisible(False)  # Initially hidden
         layout.addWidget(self.stop_joystick_button)
 
-        self.activate_camera_button = QPushButton("Activate Camera")
-        self.activate_camera_button.clicked.connect(self.launch_camera)
-        self.activate_camera_button.setVisible(False)  # Initially hidden
-        layout.addWidget(self.activate_camera_button)
+        self.launch_camera_ws_button = QPushButton("Launch Camera Web-Server")
+        self.launch_camera_ws_button.clicked.connect(self.launch_camera_ws)
+        self.launch_camera_ws_button.setVisible(False)  # Initially hidden
+        layout.addWidget(self.launch_camera_ws_button)
 
-        self.deactivate_camera_button = QPushButton("Deactivate Camera")
-        self.deactivate_camera_button.clicked.connect(self.stop_camera)
-        self.deactivate_camera_button.setDisabled(True)  # Initially disabled
-        self.deactivate_camera_button.setVisible(False)  # Initially hidden
-        layout.addWidget(self.deactivate_camera_button)
+        self.stop_camera_ws_button = QPushButton("Stop Camera Web-Server")
+        self.stop_camera_ws_button.clicked.connect(self.stop_camera_ws)
+        self.stop_camera_ws_button.setDisabled(True)  # Initially disabled
+        self.stop_camera_ws_button.setVisible(False)  # Initially hidden
+        layout.addWidget(self.stop_camera_ws_button)
+    
+        self.move_pointA_layout = QHBoxLayout()
+        self.launch_pointA_button = QPushButton("Point A")
+        self.stop_pointA_button = QPushButton("Stop A")
+        self.stop_pointA_button.setDisabled(True)  # Initially disabled
+        self.launch_pointA_button.clicked.connect(lambda: self.launch_move_point(
+            self.move_point_A_process, 
+            'ros2 run vedita_bot_addon send_goal --ros-args '
+            '-p x:=0.0 '
+            '-p y:=0.0 '
+            '-p z:=0.0 '
+            '-p qx:=0.0 '
+            '-p qy:=0.0 '
+            '-p qz:=0.0 '
+            '-p qw:=1.0', 
+            self.launch_pointA_button, self.stop_pointA_button
+        ))
+        self.move_pointA_layout.addWidget(self.launch_pointA_button)
+        
+        self.stop_pointA_button.clicked.connect(lambda: self.stop_move_point(
+            self.move_point_A_process, 
+            self.launch_pointA_button, self.stop_pointA_button
+        ))
+        self.move_pointA_layout.addWidget(self.stop_pointA_button)
 
+        self.move_pointB_layout = QHBoxLayout()
+
+        self.launch_pointB_button = QPushButton("Point B")
+        self.stop_pointB_button = QPushButton("Stop B")
+        self.launch_pointB_button.clicked.connect(lambda: self.launch_move_point(
+            self.move_point_B_process, 
+            'ros2 run vedita_bot_addon send_goal --ros-args '
+            '-p x:=0.0 '
+            '-p y:=0.0 '
+            '-p z:=0.0 '
+            '-p qx:=0.0 '
+            '-p qy:=0.0 '
+            '-p qz:=0.0 '
+            '-p qw:=1.0', 
+            self.launch_pointB_button, self.stop_pointB_button
+        ))
+        self.move_pointB_layout.addWidget(self.launch_pointB_button)
+        
+        self.stop_pointB_button.clicked.connect(lambda: self.stop_move_point(
+            self.move_point_B_process, 
+            self.launch_pointB_button, self.stop_pointB_button
+        ))
+        self.stop_pointB_button.setDisabled(True)  # Initially disabled
+        self.move_pointB_layout.addWidget(self.stop_pointB_button)
+
+        self.move_pointC_layout = QHBoxLayout()
+
+        self.launch_pointC_button = QPushButton("Point C")
+        self.stop_pointC_button = QPushButton("Stop C")
+        self.launch_pointC_button.clicked.connect(lambda:self.launch_move_point(
+            self.move_point_C_process, 
+            'ros2 run vedita_bot_addon send_goal --ros-args '
+            '-p x:=0.0 '
+            '-p y:=0.0 '
+            '-p z:=0.0 '
+            '-p qx:=0.0 '
+            '-p qy:=0.0 '
+            '-p qz:=0.0 '
+            '-p qw:=1.0', 
+            self.launch_pointC_button, self.stop_pointC_button
+        ))
+        self.move_pointC_layout.addWidget(self.launch_pointC_button)
+        
+        self.stop_pointC_button.clicked.connect(lambda: self.stop_move_point(
+            self.move_point_C_process, 
+            self.launch_pointC_button, self.stop_pointC_button
+        ))
+        self.stop_pointC_button.setDisabled(True)  # Initially disabled
+        self.move_pointC_layout.addWidget(self.stop_pointC_button)
+        
+        layout.addLayout(self.move_pointA_layout)
+        layout.addLayout(self.move_pointB_layout)
+        layout.addLayout(self.move_pointC_layout)
 
         self.setLayout(layout)
-        load_dotenv()
-        # Store ROS processes
-        self.sim_process = None
-        self.localization_process = None
-        self.navigation_process = None
-        self.joystick_process = None
-        self.camera_process = None
-        self.person_follower_process = None
-
-        self.raspi_ip=os.getenv("RASPI_IP")
-        self.raspi_username=os.getenv("RASPI_USERNAME")
-        self.raspi_password=os.getenv("RASPI_PASSWORD")
-
-        self.ssh_client = None
-        self.robot_process = None
-        self.log_thread = None
+        
 
     def toggle_use_sim_time(self):
         is_checked = self.sim_time_checkbox.isChecked()
@@ -154,10 +241,12 @@ class ROS2Launcher(QWidget):
         self.stop_sim_button.setVisible(is_checked)
         self.launch_joystick_button.setVisible(not is_checked)
         self.stop_joystick_button.setVisible(not is_checked)
-        self.activate_camera_button.setVisible(not is_checked)
-        self.deactivate_camera_button.setVisible(not is_checked)
-        self.launch_person_follow_button.setVisible(not is_checked)
-        self.stop_person_follow_button.setVisible(not is_checked)
+        # self.launch_camera_ws_button.setVisible(not is_checked)
+        # self.stop_camera_ws_button.setVisible(not is_checked)
+        # self.launch_person_follow_button.setVisible(not is_checked)
+        # self.stop_person_follow_button.setVisible(not is_checked)
+        # self.launch_robot_button.setVisible(not is_checked)
+        # self.stop_robot_button.setVisible(not is_checked)
 
     def get_use_sim_time(self):
         return "true" if self.sim_time_checkbox.isChecked() else "false"
@@ -218,15 +307,17 @@ class ROS2Launcher(QWidget):
             # Disable launch button, enable stop button
             self.launch_navigation_button.setDisabled(True)
             self.stop_navigation_button.setDisabled(False)
-
+            self.stop_localization_button.setDisabled(True)
+    
     def stop_navigation(self):
         self.stop_ros_process(self.navigation_process, "Navigation stopped.")
         self.navigation_process = None
 
         # Disable stop button, enable previous step stop button
         self.stop_navigation_button.setDisabled(True)
+        self.launch_navigation_button.setDisabled(False)
         self.stop_localization_button.setDisabled(False)
-    
+        
     def launch_joystick(self):
         if self.joystick_process is None:
             command = f"ros2 launch vedita_bot joystick.launch.py"
@@ -245,26 +336,24 @@ class ROS2Launcher(QWidget):
         self.stop_joystick_button.setDisabled(True)
         self.launch_joystick_button.setDisabled(False)
 
-    def launch_camera(self):
-        if self.camera_process is None:
-            command = f"ros2 launch vedita_bot camera.launch.py"
-            self.camera_process = self.start_ros_process(command)
-            self.status_label.setText("Camera activated...")
+    def launch_camera_ws(self):
+        if self.camera_ws_process is None:
+            command = f"ros2 run web_video_server web_video_server"
+            self.camera_ws_process = self.start_ros_process(command)
+            self.status_label.setText("Camera WebServer Running..")
 
             # Disable launch button, enable stop button
-            self.activate_camera_button.setDisabled(True)
-            self.deactivate_camera_button.setDisabled(False)
-            self.launch_person_follow_button.setDisabled(False)
+            self.launch_camera_ws_button.setDisabled(True)
+            self.stop_camera_ws_button.setDisabled(False)
 
-
-    def stop_camera(self):
-        self.stop_ros_process(self.camera_process, "Camera deactivated.")
-        self.camera_process= None
+    def stop_camera_ws(self):
+        self.stop_ros_process(self.camera_ws_process, "Camera WebServer Stopped.")
+        self.camera_ws_process= None
 
         # Disable stop button, enable previous step stop button
-        self.deactivate_camera_button.setDisabled(True)
-        self.activate_camera_button.setDisabled(False)
-        self.launch_person_follow_button.setDisabled(True)
+        self.stop_camera_ws_button.setDisabled(True)
+        self.launch_camera_ws_button.setDisabled(False)
+
 
     def launch_person_follower(self):
         if self.person_follower_process is None:
@@ -275,7 +364,7 @@ class ROS2Launcher(QWidget):
             # Disable launch button, enable stop button
             self.launch_person_follow_button.setDisabled(True)
             self.stop_person_follow_button.setDisabled(False)
-            self.deactivate_camera_button.setDisabled(True)
+            
 
     def stop_person_follower(self):
         self.stop_ros_process(self.person_follower_process, "Person Follower stopped.")
@@ -284,7 +373,23 @@ class ROS2Launcher(QWidget):
         # Disable stop button, enable previous step stop button
         self.stop_person_follow_button.setDisabled(True)
         self.launch_person_follow_button.setDisabled(False)
-        self.deactivate_camera_button.setDisabled(False)
+        
+    def launch_move_point(self, point_process, command, button_launch, button_stop):
+        if point_process is None:
+            point_process = self.start_ros_process(command)
+            self.status_label.setText("Robot Moving...")
+
+            # Disable launch button, enable stop button, enable next step
+            button_launch.setDisabled(True)
+            button_stop.setDisabled(False)
+
+    def stop_move_point(self, point_process, button_launch, button_stop):
+        self.stop_ros_process(point_process, "Move Canceled")
+        point_process = None
+
+        # Disable stop button, disable next steps
+        button_stop.setDisabled(True)
+        button_launch.setDisabled(False)
 
     def launch_robot(self):
         if self.robot_process is None:
@@ -295,7 +400,7 @@ class ROS2Launcher(QWidget):
                 self.ssh_client.connect(self.raspi_ip, username=self.raspi_username, password=self.raspi_password)
 
                 # Command to launch the robot
-                command = "ros2 launch vedita_bot launch_robot.launch.py"
+                command = "ros2 launch vedita_bot camera.launch.py"
 
                 # Execute the command in a shell to allow for streaming output
                 transport = self.ssh_client.get_transport()
@@ -333,6 +438,8 @@ class ROS2Launcher(QWidget):
                 self.launch_robot_button.setDisabled(False)
             except Exception as e:
                 self.status_label.setText(f"Failed to stop robot: {e}")
+                self.launch_robot_button.setDisabled(False)
+                self.stop_robot_button.setDisabled(True)
 
     def start_ros_process(self, command):
         process = subprocess.Popen(
@@ -386,6 +493,37 @@ class ROS2Launcher(QWidget):
         html_text = html_text.replace('\x1b[0m', '</span>')  # Reset code
         return html_text
 
+    def insert_data(self, table, data):
+        conn = None
+        try:
+            # Connect to MySQL database
+            conn = pymysql.connect(
+                host=self.DB_HOST,
+                port=self.DB_PORT,
+                user=self.DB_USER,
+                password=self.DB_PASSWORD,
+                database=self.DB_NAME,
+                cursorclass=pymysql.cursors.DictCursor
+            )
+            
+            cursor = conn.cursor()
+
+            # Prepare SQL query dynamically
+            columns = ', '.join(data.keys())
+            placeholders = ', '.join(['%s'] * len(data))
+            sql = f"REPLACE INTO {table} ({columns}) VALUES ({placeholders})"
+
+            cursor.execute(sql, tuple(data.values()))
+            conn.commit()
+            return True
+
+        except pymysql.MySQLError as e:
+            return False
+
+        finally:
+            if conn:
+                conn.close()
+
     def update_log(self, log_text):
         """Update the log output with colored text."""
         html_text = self.ansi_to_html(log_text)
@@ -397,10 +535,17 @@ class ROS2Launcher(QWidget):
         self.stop_localization()
         self.stop_sim()
         self.stop_joystick()
-        self.stop_camera()
+        self.stop_camera_ws()
         self.stop_person_follower()
-        #self.stop_robot()
+        self.stop_robot()
+        if(self.move_point_A_process is not None):
+            self.stop_move_point(point_process=self.move_point_A_process, button_launch=self.launch_pointA_button, button_stop=self.stop_pointA_button)
+        if(self.move_point_B_process is not None):
+            self.stop_move_point(point_process=self.move_point_B_process, button_launch=self.launch_pointB_button, button_stop=self.stop_pointB_button)
+        if(self.move_point_C_process is not None):
+            self.stop_move_point(point_process=self.move_point_C_process, button_launch=self.launch_pointC_button, button_stop=self.stop_pointC_button)
         event.accept()  # Allow window to close
+
 
 
 
@@ -446,8 +591,8 @@ def cleanup():
         window.stop_ros_process(window.navigation_process, "Navigation stopped.")
     if window.joystick_process is not None:
         window.stop_ros_process(window.joystick_process, "Joystick stopped.")
-    if window.camera_process is not None:
-        window.stop_ros_process(window.camera_process, "Camera stopped.")
+    if window.camera_ws_process is not None:
+        window.stop_ros_process(window.camera_ws_process, "Camera Web Server stopped.")
     if window.person_follower_process is not None:
         window.stop_ros_process(window.person_follower_process, "Person Follower stopped.")
     if window.robot_process is not None:
