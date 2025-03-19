@@ -4,7 +4,7 @@ import os
 import signal
 from dotenv import load_dotenv
 import re
-import pymysql
+import mysql.connector
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QTextEdit, QLineEdit, QHBoxLayout, QCheckBox
 )
@@ -27,9 +27,12 @@ class ROS2Launcher(QWidget):
         self.move_point_A_process = None
         self.move_point_B_process = None
         self.move_point_C_process = None
+        self.move_point_D_process = None
+        self.move_point_E_process = None
+
 
         self.DB_HOST=os.getenv("DB_HOST")
-        self.DB_PORT=os.getenv("DB_PORT")
+        self.DB_PORT=int(os.getenv("DB_PORT"))
         self.DB_USER=os.getenv("DB_USER")
         self.DB_PASSWORD=os.getenv("DB_PASSWORD")
         self.DB_NAME=os.getenv("DB_NAME")
@@ -89,7 +92,7 @@ class ROS2Launcher(QWidget):
 
         map_layout = QHBoxLayout()
         map_layout.addWidget(QLabel("Map File:"))
-        self.map_input = QLineEdit("./src/vedita_bot/maps/lantai8baru.yaml")
+        self.map_input = QLineEdit("./src/vedita_bot/maps/lt6_gayungan.yaml")
         map_layout.addWidget(self.map_input)
         layout.addLayout(map_layout)
 
@@ -152,20 +155,21 @@ class ROS2Launcher(QWidget):
         layout.addWidget(self.stop_camera_ws_button)
     
         self.move_pointA_layout = QHBoxLayout()
-        self.launch_pointA_button = QPushButton("Point A")
-        self.stop_pointA_button = QPushButton("Stop A")
+        self.launch_pointA_button = QPushButton("F3")
+        self.stop_pointA_button = QPushButton("Stop F3")
         self.stop_pointA_button.setDisabled(True)  # Initially disabled
         self.launch_pointA_button.clicked.connect(lambda: self.launch_move_point(
             self.move_point_A_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=0.0 '
-            '-p y:=0.0 '
+            '-p x:=3.2 '
+            '-p y:=-6.7 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
             '-p qz:=0.0 '
             '-p qw:=1.0', 
-            self.launch_pointA_button, self.stop_pointA_button
+            self.launch_pointA_button, self.stop_pointA_button,
+            table='sari_additionalData', data=(1, 'F3')
         ))
         self.move_pointA_layout.addWidget(self.launch_pointA_button)
         
@@ -177,19 +181,20 @@ class ROS2Launcher(QWidget):
 
         self.move_pointB_layout = QHBoxLayout()
 
-        self.launch_pointB_button = QPushButton("Point B")
-        self.stop_pointB_button = QPushButton("Stop B")
+        self.launch_pointB_button = QPushButton("F4")
+        self.stop_pointB_button = QPushButton("Stop F4")
         self.launch_pointB_button.clicked.connect(lambda: self.launch_move_point(
             self.move_point_B_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=0.0 '
-            '-p y:=0.0 '
+            '-p x:=10.18 '
+            '-p y:=-6.29 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
             '-p qz:=0.0 '
             '-p qw:=1.0', 
-            self.launch_pointB_button, self.stop_pointB_button
+            self.launch_pointB_button, self.stop_pointB_button,
+            table='sari_additionalData', data=(1, 'F4')
         ))
         self.move_pointB_layout.addWidget(self.launch_pointB_button)
         
@@ -202,19 +207,20 @@ class ROS2Launcher(QWidget):
 
         self.move_pointC_layout = QHBoxLayout()
 
-        self.launch_pointC_button = QPushButton("Point C")
-        self.stop_pointC_button = QPushButton("Stop C")
+        self.launch_pointC_button = QPushButton("F5")
+        self.stop_pointC_button = QPushButton("Stop F5")
         self.launch_pointC_button.clicked.connect(lambda:self.launch_move_point(
             self.move_point_C_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=0.0 '
-            '-p y:=0.0 '
+            '-p x:=8.95 '
+            '-p y:=-4.75 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
             '-p qz:=0.0 '
             '-p qw:=1.0', 
-            self.launch_pointC_button, self.stop_pointC_button
+            self.launch_pointC_button, self.stop_pointC_button,
+            table='sari_additionalData', data=(1, 'F5')
         ))
         self.move_pointC_layout.addWidget(self.launch_pointC_button)
         
@@ -225,12 +231,64 @@ class ROS2Launcher(QWidget):
         self.stop_pointC_button.setDisabled(True)  # Initially disabled
         self.move_pointC_layout.addWidget(self.stop_pointC_button)
         
+        self.move_pointD_layout = QHBoxLayout()
+        self.launch_pointD_button = QPushButton("F6")
+        self.stop_pointD_button = QPushButton("Stop F6")
+        self.stop_pointD_button.setDisabled(True)  # Initially disabled
+        self.launch_pointD_button.clicked.connect(lambda: self.launch_move_point(
+            self.move_point_A_process, 
+            'ros2 run vedita_bot_addon send_goal --ros-args '
+            '-p x:=4.03 '
+            '-p y:=2.0 '
+            '-p z:=0.0 '
+            '-p qx:=0.0 '
+            '-p qy:=0.0 '
+            '-p qz:=0.0 '
+            '-p qw:=1.0', 
+            self.launch_pointD_button, self.stop_pointD_button,
+            table='sari_additionalData', data=(1, 'F6')
+        ))
+        self.move_pointD_layout.addWidget(self.launch_pointD_button)
+        
+        self.stop_pointD_button.clicked.connect(lambda: self.stop_move_point(
+            self.move_point_A_process, 
+            self.launch_pointD_button, self.stop_pointD_button
+        ))
+        self.move_pointD_layout.addWidget(self.stop_pointD_button)
+
+        self.move_pointE_layout = QHBoxLayout()
+        self.launch_pointE_button = QPushButton("Docking")
+        self.stop_pointE_button = QPushButton("Docking")
+        self.stop_pointE_button.setDisabled(True)  # Initially disabled
+        self.launch_pointE_button.clicked.connect(lambda: self.launch_move_point(
+            self.move_point_A_process, 
+            'ros2 run vedita_bot_addon send_goal --ros-args '
+            '-p x:=1.2 '
+            '-p y:=0.0 '
+            '-p z:=0.0 '
+            '-p qx:=0.0 '
+            '-p qy:=0.0 '
+            '-p qz:=0.0 '
+            '-p qw:=1.0', 
+            self.launch_pointE_button, self.stop_pointE_button,
+            table='sari_additionalData', data=(1, 'Restroom F6')
+        ))
+        self.move_pointE_layout.addWidget(self.launch_pointE_button)
+        
+        self.stop_pointE_button.clicked.connect(lambda: self.stop_move_point(
+            self.move_point_A_process, 
+            self.launch_pointE_button, self.stop_pointE_button
+        ))
+        self.move_pointE_layout.addWidget(self.stop_pointE_button)
+
         layout.addLayout(self.move_pointA_layout)
         layout.addLayout(self.move_pointB_layout)
         layout.addLayout(self.move_pointC_layout)
+        layout.addLayout(self.move_pointD_layout)
+        layout.addLayout(self.move_pointE_layout)
 
         self.setLayout(layout)
-        
+
 
     def toggle_use_sim_time(self):
         is_checked = self.sim_time_checkbox.isChecked()
@@ -374,11 +432,12 @@ class ROS2Launcher(QWidget):
         self.stop_person_follow_button.setDisabled(True)
         self.launch_person_follow_button.setDisabled(False)
         
-    def launch_move_point(self, point_process, command, button_launch, button_stop):
+    def launch_move_point(self, point_process, command, button_launch, button_stop, table, data):
         if point_process is None:
             point_process = self.start_ros_process(command)
             self.status_label.setText("Robot Moving...")
-
+            
+            self.insert_data(table, data)
             # Disable launch button, enable stop button, enable next step
             button_launch.setDisabled(True)
             button_stop.setDisabled(False)
@@ -494,35 +553,29 @@ class ROS2Launcher(QWidget):
         return html_text
 
     def insert_data(self, table, data):
-        conn = None
         try:
             # Connect to MySQL database
-            conn = pymysql.connect(
+            connection = mysql.connector.connect(
                 host=self.DB_HOST,
-                port=self.DB_PORT,
                 user=self.DB_USER,
                 password=self.DB_PASSWORD,
                 database=self.DB_NAME,
-                cursorclass=pymysql.cursors.DictCursor
+                port=self.DB_PORT
             )
-            
-            cursor = conn.cursor()
+            cursor = connection.cursor()
 
-            # Prepare SQL query dynamically
-            columns = ', '.join(data.keys())
-            placeholders = ', '.join(['%s'] * len(data))
-            sql = f"REPLACE INTO {table} ({columns}) VALUES ({placeholders})"
+            # Execute REPLACE INTO query
+            query = f"REPLACE INTO `{table}` (`id`, `room_name`) VALUES (%s, %s)"
+            cursor.execute(query, data)
 
-            cursor.execute(sql, tuple(data.values()))
-            conn.commit()
-            return True
+            # Commit and close connection
+            connection.commit()
+            cursor.close()
+            connection.close()
+            print(f"Position Updated")
 
-        except pymysql.MySQLError as e:
-            return False
-
-        finally:
-            if conn:
-                conn.close()
+        except mysql.connector.Error as e:
+            print(f" Database error: {e}")
 
     def update_log(self, log_text):
         """Update the log output with colored text."""
