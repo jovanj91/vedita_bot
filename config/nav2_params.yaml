@@ -119,7 +119,7 @@ amcl:
     always_reset_initial_pose: false
     first_map_only: false
     initial_pose:
-      x: 1.2
+      x: 0.0
       y: 0.0
       z: 0.0
       yaw: 0.0
@@ -352,8 +352,8 @@ local_costmap:
       plugins: ["obstacle_layer", "denoise_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 2.0 #3.0
-        inflation_radius: 0.45 #0.55
+        cost_scaling_factor: 2.58 #2.0
+        inflation_radius: 0.55 #0.45
       denoise_layer:
         plugin: "nav2_costmap_2d::DenoiseLayer"
         enabled: true
@@ -373,16 +373,16 @@ local_costmap:
           raytrace_min_range: 0.0
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0
-      range_sensor_layer:
-        plugin: "nav2_costmap_2d::RangeSensorLayer"
-        enabled: True
-        clear_on_max_reading: True
-        topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
-        clear_threshold: 0.2
-        mark_threshold: 0.8
-        no_readings_timeout: 0.0
-        inflate_cone: 1.0
-        input_sensor_type: "ALL"
+      # range_sensor_layer:
+      #   plugin: "nav2_costmap_2d::RangeSensorLayer"
+      #   enabled: True
+      #   clear_on_max_reading: True
+      #   topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
+      #   clear_threshold: 0.2
+      #   mark_threshold: 0.8
+      #   no_readings_timeout: 0.0
+      #   inflate_cone: 1.0
+      #   input_sensor_type: "ALL"
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -399,7 +399,7 @@ global_costmap:
       robot_radius: 0.22
       resolution: 0.05
       track_unknown_space: true
-      plugins: ["static_layer", "obstacle_layer", "inflation_layer", ]
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -417,20 +417,20 @@ global_costmap:
           raytrace_min_range: 0.0
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0
-      range_sensor_layer:
-        plugin: "nav2_costmap_2d::RangeSensorLayer"
-        enabled: True
-        clear_on_max_reading: True
-        topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
-        clear_threshold: 0.2
-        mark_threshold: 0.8
-        no_readings_timeout: 0.0
-        inflate_cone: 1.0
-        input_sensor_type: "ALL"
+      # range_sensor_layer:
+      #   plugin: "nav2_costmap_2d::RangeSensorLayer"
+      #   enabled: True
+      #   clear_on_max_reading: True
+      #   topics: ["/fr_mid_range", "/fr_left_range", "/fr_right_range", "/bc_mid_range"]
+      #   clear_threshold: 0.2
+      #   mark_threshold: 0.8
+      #   no_readings_timeout: 0.0
+      #   inflate_cone: 1.0
+      #   input_sensor_type: "ALL"
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 2.0 #2.58
-        inflation_radius: 0.45 #0.55
+        cost_scaling_factor: 2.58 #2.0
+        inflation_radius: 0.55 #0.45
       always_send_full_costmap: True
 
 map_server:
@@ -589,7 +589,7 @@ collision_monitor:
     polygons: ["PolygonStop", "PolygonSlow", "FootprintApproach"]
     PolygonStop:
       type: "polygon"
-      points: [0.3, 0.3, 0.3, -0.3, -0.3, -0.3, -0.3, 0.3]
+      points: [0.22, 0.22, 0.22, -0.22, -0.22, -0.22, -0.22, 0.22]
       # type: "circle"
       # radius: 0.33
       action_type: "stop"
@@ -617,15 +617,15 @@ collision_monitor:
       max_points: 5
       visualize: True
       enabled: True
-    observation_sources: ["scan", "fr_mid_range", "fr_left_range", "fr_right_range", "bc_mid_range"]
+    observation_sources: ["scan"]
     scan:
       type: "scan"
       topic: "/scan"
       enabled: True
-    fr_mid_range:
-      type: "range"
-      topic: "/fr_mid_range"
-      enabled: True
+    # fr_mid_range:
+    #   type: "range"
+    #   topic: "/fr_mid_range"
+    #   enabled: True
     fr_left_range:
       type: "range"
       topic: "/fr_left_range"
