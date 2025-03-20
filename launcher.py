@@ -170,13 +170,13 @@ class ROS2Launcher(QWidget):
         self.launch_pointA_button.clicked.connect(lambda: self.launch_move_point(
             self.move_point_A_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=2.12 '
-            '-p y:=3.1 '
+            '-p x:=1.55 '
+            '-p y:=3.37 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
-            '-p qz:=0.8 '
-            '-p qw:=-0.6', 
+            '-p qz:=0.73 '
+            '-p qw:=0.68 ', 
             self.launch_pointA_button, self.stop_pointA_button,
             table='sari_additionalData', data=(1, 'F3'),
             room='F3'
@@ -196,13 +196,13 @@ class ROS2Launcher(QWidget):
         self.launch_pointB_button.clicked.connect(lambda: self.launch_move_point(
             self.move_point_B_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=-4.10 '
-            '-p y:=2.82 '
+            '-p x:=-4.04 '
+            '-p y:=2.96 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
-            '-p qz:=0.8 '
-            '-p qw:=-0.6', 
+            '-p qz:=0.96 '
+            '-p qw:=0.27 ', 
             self.launch_pointB_button, self.stop_pointB_button,
             table='sari_additionalData', data=(1, 'F4'),
             room='F4'
@@ -223,13 +223,13 @@ class ROS2Launcher(QWidget):
         self.launch_pointC_button.clicked.connect(lambda:self.launch_move_point(
             self.move_point_C_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=-4.35 '
-            '-p y:=4.8 '
+            '-p x:=-3.97 '
+            '-p y:=4.6 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
-            '-p qz:=0.6 '
-            '-p qw:=-0.8', 
+            '-p qz:=-0.67 '
+            '-p qw:=0.73 ', 
             self.launch_pointC_button, self.stop_pointC_button,
             table='sari_additionalData', data=(1, 'F5'),
             room='F5'
@@ -255,8 +255,8 @@ class ROS2Launcher(QWidget):
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
-            '-p qz:=0.0 '
-            '-p qw:=0.0', 
+            '-p qz:=0.44 '
+            '-p qw:=0.89 ', 
             self.launch_pointD_button, self.stop_pointD_button,
             table='sari_additionalData', data=(1, 'F6'),
             room='F6'
@@ -276,13 +276,13 @@ class ROS2Launcher(QWidget):
         self.launch_pointE_button.clicked.connect(lambda: self.launch_move_point(
             self.move_point_E_process, 
             'ros2 run vedita_bot_addon send_goal --ros-args '
-            '-p x:=0.0'
+            '-p x:=0.0 '
             '-p y:=0.0 '
             '-p z:=0.0 '
             '-p qx:=0.0 '
             '-p qy:=0.0 '
             '-p qz:=0.0 '
-            '-p qw:=1.0', 
+            '-p qw:=1.0 ', 
             self.launch_pointE_button, self.stop_pointE_button,
             table='sari_additionalData', data=(1, 'Restroom F6'),
             room='F6'
